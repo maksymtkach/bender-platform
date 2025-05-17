@@ -2,16 +2,27 @@ import './App.css'
 import {AccordionDemo} from "./components/AccordionDemo.jsx";
 import { ThemeProvider } from "./components/ui/theme-provider.js"
 import {LoginForm} from "@/components/auth/LoginForm.jsx";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import LoginPage from "@/pages/LoginPage.jsx";
+import InfoPage from "@/pages/InfoPage.jsx";
+import Layout from "@/components/layout/Layout.jsx";
+import HomePage from "@/pages/HomePage.jsx";
+
 
 //TODO: Create secure routes for Login and SignUp
 function App() {
   return (
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-              <div className="w-full max-w-sm">
-                  <LoginForm />
-              </div>
-          </div>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <BrowserRouter>
+              <Routes>
+                  <Route element={<Layout />}>
+                      <Route index element={<HomePage />} />
+                      <Route path="info" element={<InfoPage />} />
+                      <Route path="login" element={<LoginPage />} />
+                      {/*<Route path="*" element={<NoPage />} />*/}
+                  </Route>
+              </Routes>
+          </BrowserRouter>
       </ThemeProvider>
   )
 }
