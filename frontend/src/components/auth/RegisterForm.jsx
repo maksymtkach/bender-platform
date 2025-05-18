@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
 import {
     Card,
     CardContent,
@@ -9,29 +10,31 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/utils/loginUtils.js"
+import { register } from "@/utils/registerUtils.js"
 import {useState} from "react";
 import { toast } from "sonner"
 
-export function LoginForm({
+export function RegisterForm({
                               className,
                               ...props
                           }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [age, setAge] = useState(0);
+    const navigate = useNavigate();
 
     const handleSubmit = async e => {
         e.preventDefault();
 
         try {
-            await login(email, password);
-            console.log("Login successful");
+            await register(email, password, age);
+            navigate("/login");
         } catch (error) {
             console.log(error)
             toast.error(
-                "Login failed!",
+                "Registration failed!",
                 {
-                    description: "Credentials are incorrect",
+                    description: error.response.data,
                     duration: 2000,
                 }
             );
@@ -42,9 +45,9 @@ export function LoginForm({
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl">Login</CardTitle>
+                    <CardTitle className="text-2xl">Sign up</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account
+                        Enter your email below to create account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -62,30 +65,27 @@ export function LoginForm({
                                 />
                             </div>
                             <div className="grid gap-2">
+                                <Label htmlFor="email">Age</Label>
+                                <Input
+                                    id="age"
+                                    type="number"
+                                    required
+                                    onChange={e => setAge(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    <a
-                                        href="#"
-                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a>
                                 </div>
-                                {/*TODO: add visibility toggle*/}
+                                {/*TODO: add visibility toggle + add password confirmation*/}
                                 <Input id="password" type="password" required onChange={e => setPassword(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full">
-                                Login
+                                Register
                             </Button>
                             <Button variant="outline" className="w-full">
-                                Login with Google
+                                Register with Google
                             </Button>
-                        </div>
-                        <div className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
-                            <a href="/register" className="underline underline-offset-4">
-                                Sign up
-                            </a>
                         </div>
                     </form>
                 </CardContent>

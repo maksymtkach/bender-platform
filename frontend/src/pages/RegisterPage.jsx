@@ -1,13 +1,14 @@
 import React from 'react';
 import {LoginForm} from "@/components/auth/LoginForm.jsx";
+import {RegisterForm} from "@/components/auth/RegisterForm.jsx";
 
 //TODO: rewrite to common functional component
-const LoginPage = () => (
+const RegisterPage = () => (
     <div className="flex flex-1 w-full items-center justify-center p-6 md:p-10">
         <div className="w-full max-w-sm">
-            <LoginForm />
+            <RegisterForm />
         </div>
     </div>
 );
 
-export default LoginPage;
+export default RegisterPage;
