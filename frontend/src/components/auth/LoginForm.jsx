@@ -9,11 +9,35 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { login } from "@/utils/loginUtils.js"
+import {useState} from "react";
+import { toast } from "sonner"
 
 export function LoginForm({
                               className,
                               ...props
                           }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+
+        try {
+            await login(email, password);
+            console.log("Login successful");
+        } catch (error) {
+            console.log(error)
+            toast.error(
+                "Login failed!",
+                {
+                    description: "Credentials are incorrect",
+                    duration: 2000,
+                }
+            );
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -24,7 +48,7 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -33,6 +57,7 @@ export function LoginForm({
                                     type="email"
                                     placeholder="m@example.com"
                                     required
+                                    onChange={e => setEmail(e.target.value)}
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -45,7 +70,7 @@ export function LoginForm({
                                         Forgot your password?
                                     </a>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input id="password" type="password" required onChange={e => setPassword(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full">
                                 Login
