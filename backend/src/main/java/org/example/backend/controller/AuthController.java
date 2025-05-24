@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+//TODO: add annotations to clarify the purpose of the class
+//TODO: maybe restructure on several files + superclass
+//TODO: add OAuth (Google auth)
 @RestController
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
     //TODO: CRUD for users
-
     private final JwtService jwtService;
     private final UserService userService;
 
@@ -34,6 +36,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("User " + request.getUsername() + " doesn't exist. Create a new account");
         }
 
+        //TODO: locate in the dedicated service (?)
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
         User user = userService.findByUsername(request.getUsername());

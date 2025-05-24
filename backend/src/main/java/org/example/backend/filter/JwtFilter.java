@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+//TODO: add annotations to clarify the purpose of the class
 @Component
 @AllArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {

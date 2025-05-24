@@ -9,6 +9,7 @@ import java.util.Date;
 
 import io.jsonwebtoken.security.Keys;
 
+//TODO: add annotations to clarify the purpose of the class
 @Service
 public class JwtService {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);

@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+//TODO: add annotations to clarify the purpose of the class
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
