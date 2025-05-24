@@ -7,6 +7,6 @@ export async function login(username, password) {
     })
 
     const token = res.data.token;
-    console.log(token);
+    alert("Login successful");
     localStorage.setItem("token", token);
 }

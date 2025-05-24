@@ -8,23 +8,26 @@ import InfoPage from "@/pages/InfoPage.jsx";
 import Layout from "@/components/layout/Layout.jsx";
 import HomePage from "@/pages/HomePage.jsx";
 import RegisterPage from "@/pages/RegisterPage.jsx";
+import {UserProvider} from "@/providers/UserProvider.jsx";
 
 
 //TODO: Create secure routes for Login and SignUp
 function App() {
   return (
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <BrowserRouter>
-              <Routes>
-                  <Route element={<Layout />}>
-                      <Route index element={<HomePage />} />
-                      <Route path="info" element={<InfoPage />} />
-                      <Route path="login" element={<LoginPage />} />
-                      <Route path="register" element={<RegisterPage />} />
-                  </Route>
-              </Routes>
-          </BrowserRouter>
-      </ThemeProvider>
+      <UserProvider>
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+              <BrowserRouter>
+                  <Routes>
+                      <Route element={<Layout />}>
+                          <Route index element={<HomePage />} />
+                          <Route path="info" element={<InfoPage />} />
+                          <Route path="login" element={<LoginPage />} />
+                          <Route path="register" element={<RegisterPage />} />
+                      </Route>
+                  </Routes>
+              </BrowserRouter>
+          </ThemeProvider>
+      </UserProvider>
   )
 }
 

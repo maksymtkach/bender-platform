@@ -10,8 +10,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/utils/loginUtils.js"
-import {useState} from "react";
+import {useContext, useState} from "react";
 import { toast } from "sonner"
+import {useNavigate} from "react-router-dom";
+import {UserContext} from "@/contexts/UserContext.js";
 
 export function LoginForm({
                               className,
@@ -19,12 +21,16 @@ export function LoginForm({
                           }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const { user, setUser } = useContext(UserContext);
 
     const handleSubmit = async e => {
         e.preventDefault();
 
         try {
             await login(email, password);
+            setUser(user);
+            navigate("/info");
             console.log("Login successful");
         } catch (error) {
             console.log(error)
