@@ -1,6 +1,8 @@
 package org.example.backend.config;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.example.backend.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,20 +13,35 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-//TODO: add annotations to clarify the purpose of the class
+/**
+ * Конфігурація безпеки для всього застосунку.
+ * - Turn Off CSRF (redundant due to JWT usage)
+ * - Set CORS (for access from client)
+ * - Listed all endpoints that can be reached without auth
+ * - JwtFiler
+ */
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    private JwtFilter jwtFilter;
+    /**
+     * Checks token for each request and set context (for Auth)
+     */
+    private final JwtFilter jwtFilter;
 
+    /**
+     * Main chain of security filters:
+     * - /login, /auth/** without Auth
+     * - others only with Auth
+     * - JwtFilter
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(withDefaults()) // for cors
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/", "/login**", "/error", "/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

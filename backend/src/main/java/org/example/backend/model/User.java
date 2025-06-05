@@ -18,8 +18,12 @@ public class User {
     private long id;
     @Column(unique = true, nullable = false)
     private String username;
+    @Column(unique = true, nullable = false)
+    private String email;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
     private int age;
+    @Column(nullable = false)
+    private UserRole role;
 }
