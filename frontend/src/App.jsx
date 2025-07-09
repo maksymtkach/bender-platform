@@ -9,6 +9,7 @@ import Layout from "@/components/layout/Layout.jsx";
 import HomePage from "@/pages/HomePage.jsx";
 import RegisterPage from "@/pages/RegisterPage.jsx";
 import {UserProvider} from "@/providers/UserProvider.jsx";
+import CreateTestPage from "@/pages/CreateTestPage.jsx";
 
 //TODO: Create secure routes for Login and SignUp
 function App() {
@@ -20,6 +21,7 @@ function App() {
                       <Route element={<Layout />}>
                           <Route index element={<HomePage />} />
                           <Route path="info" element={<InfoPage />} />
+                          <Route path="create-test" element={<CreateTestPage />} />
                           <Route path="login" element={<LoginPage />} />
                           <Route path="register" element={<RegisterPage />} />
                       </Route>
