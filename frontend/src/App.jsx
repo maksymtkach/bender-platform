@@ -10,12 +10,11 @@ import HomePage from "@/pages/HomePage.jsx";
 import RegisterPage from "@/pages/RegisterPage.jsx";
 import {UserProvider} from "@/providers/UserProvider.jsx";
 
-
 //TODO: Create secure routes for Login and SignUp
 function App() {
   return (
       <UserProvider>
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
               <BrowserRouter>
                   <Routes>
                       <Route element={<Layout />}>

@@ -15,9 +15,11 @@ public class UserService {
     public User saveUser(User user) {
         return repository.save(user);
     }
-    public List<User> getAllUsers(String email) {
+
+    public List<User> getAllUsers() {
         return repository.findAll();
     }
+
     public boolean existsByUsername(String username) {
         return repository.findByUsername(username).isPresent();
     }

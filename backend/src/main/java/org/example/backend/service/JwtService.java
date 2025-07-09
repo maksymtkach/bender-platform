@@ -6,9 +6,9 @@ import jakarta.annotation.PostConstruct;
 import org.example.backend.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 import io.jsonwebtoken.security.Keys;
@@ -24,6 +24,8 @@ public class JwtService {
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        System.out.println("🔐 JWT SECRET: " + secret);
+        System.out.println("🔐 KEY BASE64: " + Base64.getEncoder().encodeToString(key.getEncoded()));
     }
 
     public String generateToken(String username) {
@@ -31,14 +33,13 @@ public class JwtService {
                 .setSubject(username) // username based token
                 .setIssuedAt(new Date()) // current time
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(key) // used key
+                .signWith(key, SignatureAlgorithm.HS256) // used key
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        //TODO: not sure what's the purpose of this method
+    public String extractEmail(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
@@ -54,7 +55,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, User user) {
-        final String username = extractUsername(token);
-        return (username.equals(user.getUsername())) && !isTokenExpired(token);
+        final String email = extractEmail(token);
+        return (email.equals(user.getEmail())) && !isTokenExpired(token);
     }
 }

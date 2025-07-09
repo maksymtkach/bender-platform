@@ -1,10 +1,13 @@
 package org.example.backend.controller;
 
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.backend.model.LoginRequest;
 import org.example.backend.model.RegisterRequest;
 import org.example.backend.model.User;
 import org.example.backend.model.UserRole;
+import org.example.backend.model.dto.UserDTO;
+import org.example.backend.model.mapper.UserMapper;
 import org.example.backend.service.JwtService;
 import org.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        System.out.println(request);
+
         if (request.getEmail() == null || request.getPassword() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -61,41 +66,50 @@ public class AuthController {
 
     @PostMapping("/google")
     public ResponseEntity<?> googleAuth(@RequestBody Map<String, String> body) throws GeneralSecurityException, IOException {
+        System.out.println(body);
+
         String idTokenString = body.get("token");
         if (idTokenString == null) {
-            return ResponseEntity.badRequest().body("Token is missing");
+            return ResponseEntity.badRequest().body(Map.of("error", "Token is missing"));
         }
 
-        // 1) Верифікуємо токен у Google
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList("611560011764-ol6fauabp886iu9t4tc4mon3pf2rq3u3.apps.googleusercontent.com"))
+                .setAudience(Collections.singletonList("611560011764-hng699eerd5t76jl8j6o8afvsinhd2mm.apps.googleusercontent.com"))
                 .build();
 
         GoogleIdToken idToken;
         try {
             idToken = verifier.verify(idTokenString);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid ID token"));
         }
 
         if (idToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid ID token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid ID token"));
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail();
-        // За бажанням: String name = (String) payload.get("name");
+        System.out.println("Google email: " + email);
 
-        // 2) Реєстрація/логін у вашій БД
         User user = userService.findByEmail(email);
 
-        // 3) Генеруємо свій JWT для клієнта
-        String jwt = jwtService.generateToken(user.getUsername());
+        if (user == null) {
+            String name = (String) payload.get("name");
+            user = new User();
+            user.setEmail(email);
+            user.setUsername(name != null ? name : email);
+            user.setRole(UserRole.USER);
+            user = userService.saveUser(user);
+            System.out.println("Registered new user: " + user);
+        }
+
+        String jwt = jwtService.generateToken(user.getEmail());
         return ResponseEntity.ok(Map.of("token", jwt));
     }
-
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -122,5 +136,17 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(request.getEmail() + " has been registered");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(
+            @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        String email = jwtService.extractEmail(token);
+
+        User user = userService.findByEmail(email);
+        UserDTO dto = UserMapper.toDto(user);
+        return ResponseEntity.ok(dto);
     }
 }

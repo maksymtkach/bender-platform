@@ -10,10 +10,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/utils/loginUtils.js"
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import { toast } from "sonner"
 import {useNavigate} from "react-router-dom";
 import {UserContext} from "@/contexts/UserContext.js";
+import axios from "axios";
+import { GoogleLogin } from '@react-oauth/google';
+
 
 export function LoginForm({
                               className,
@@ -22,13 +25,36 @@ export function LoginForm({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const { user, setUser } = useContext(UserContext);
+    const { setUser } = useContext(UserContext);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios.get("http://localhost:8080/api/v1/auth/me", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                setUser(res.data);
+                navigate("/info"); // одразу редірект якщо токен валідний
+            }).catch(err => {
+                console.error("Invalid token", err);
+                localStorage.removeItem("token");
+            });
+        }
+    }, []);
+
 
     const handleSubmit = async e => {
         e.preventDefault();
 
         try {
             await login(email, password);
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:8080/api/v1/auth/me", {
+                headers: { "Authorization" : `Bearer ${token}` }
+            });
+            const user = res.data;
             setUser(user);
             navigate("/info");
             console.log("Login successful");
@@ -41,6 +67,29 @@ export function LoginForm({
                     duration: 2000,
                 }
             );
+        }
+    }
+
+    async function handleGoogleSuccess(credentialResponse) {
+        try {
+            const res = await fetch('http://localhost:8080/api/v1/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: credentialResponse.credential })
+            });
+            if (!res.ok) throw new Error("Google auth failed");
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+
+            const userRes = await axios.get("http://localhost:8080/api/v1/auth/me", {
+                headers: { Authorization: `Bearer ${data.token}` }
+            });
+            setUser(userRes.data);
+
+            navigate("/info");
+        } catch (error) {
+            toast.error("Google login failed! ", error.message);
+            console.log(error);
         }
     }
 
@@ -83,9 +132,16 @@ export function LoginForm({
                             <Button type="submit" className="w-full">
                                 Login
                             </Button>
-                            <Button variant="outline" className="w-full">
-                                Login with Google
-                            </Button>
+                            <div className="w-full flex justify-center">
+                                <div className="w-full flex justify-center">
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleSuccess}
+                                        onError={() => toast.error("Google login failed!")}
+                                        width="100%"
+                                    />
+                                </div>
+                            </div>
+
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
