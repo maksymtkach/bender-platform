@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { nanoid } from "nanoid";
 import { Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import {parseQuestionsFromText} from "@/utils/parsers/parseQuestionsFromText.js";
 
 const defaultBlock = () => ({
     id: nanoid(),
@@ -251,19 +252,4 @@ export default function TestBuilder() {
     );
 }
 
-function parseQuestionsFromText(raw) {
-    const questions = [];
-    const blocks = raw.trim().split(/\n\s*\n/);
-    for (const block of blocks) {
-        const lines = block.trim().split("\n");
-        const q = lines[0].replace(/^\?\s*/, "");
-        const options = lines.slice(1).map(line => line.replace(/^\//, "").trim());
-        const correct = options.reduce((arr, opt, i) => {
-            if (opt.endsWith("*")) arr.push(i);
-            return arr;
-        }, []);
-        const cleaned = options.map(opt => opt.replace(/\s*\*$/, ""));
-        questions.push({ question: q, options: cleaned, correct, isOpen: false });
-    }
-    return questions;
-}
+
