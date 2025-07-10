@@ -11,14 +11,21 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card.jsx";
+import { Input } from "@/components/ui/input.jsx";
+import { Textarea } from "@/components/ui/textarea.js";
+import { Button } from "@/components/ui/button.js";
 import { nanoid } from "nanoid";
 import { Trash2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch.js";
 import {parseQuestionsFromText} from "@/utils/parsers/parseQuestionsFromText.js";
+import BlockActions from "@/components/test-builder/BlockActions.jsx";
+import QuestionBlock from "@/components/test-builder/QuestionBlock.jsx";
+import TextImportBlock from "@/components/test-builder/TextImportBlock.jsx";
+import SortableItem from "@/components/test-builder/SortableItem.jsx";
+import { GripVertical } from "lucide-react";
+import FileImportBlock from "@/components/test-builder/FileImportBlock.jsx";
+import { Checkbox } from "@/components/ui/checkbox"
 
 const defaultBlock = () => ({
     id: nanoid(),
@@ -28,16 +35,6 @@ const defaultBlock = () => ({
     correct: [],
     isOpen: false,
 });
-
-function BlockActions({ onAddBlock, onAddTextImportBlock, onAddFileImportBlock }) {
-    return (
-        <div className="flex flex-wrap gap-4">
-            <Button onClick={onAddBlock}>+ Додати питання</Button>
-            <Button onClick={onAddTextImportBlock}>+ Додати імпорт з тексту</Button>
-            <Button onClick={onAddFileImportBlock}>+ Додати імпорт з файлу</Button>
-        </div>
-    );
-}
 
 export default function TestBuilder() {
     const [title, setTitle] = useState("");
@@ -134,15 +131,18 @@ export default function TestBuilder() {
         <div className="space-y-4 max-w-6xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>Інформація про тест</CardTitle>
-                    <CardDescription>Назва, опис, доступ</CardDescription>
+                    <CardTitle>New test</CardTitle>
+                    <CardDescription>Important test attributes</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <Input placeholder="Назва тесту" value={title} onChange={e => setTitle(e.target.value)} />
-                    <Textarea placeholder="Опис" value={description} onChange={e => setDescription(e.target.value)} />
+                    <Input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
+                    <Textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
                     <div className="flex items-center gap-2">
-                        <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
-                        <span>Зробити публічним</span>
+                        <Checkbox
+                            checked={isPublic}
+                            onCheckedChange={setIsPublic}
+                        />
+                        <span>Public</span>
                     </div>
                 </CardContent>
             </Card>
@@ -160,81 +160,83 @@ export default function TestBuilder() {
                     {blocks.map((block, index) => {
                         if (block.type === "textImport") {
                             return (
-                                <Card key={block.id} className="border border-dashed">
-                                    <CardHeader className="flex flex-row justify-between items-center">
-                                        <CardTitle className="text-lg">Імпорт з тексту</CardTitle>
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveBlock(block.id)}>
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <Textarea
-                                            placeholder="Вставте текст у форматі:
-? Питання
-/ Варіант 1
-/ Варіант 2*
-/ Варіант 3"
-                                            value={block.content}
-                                            onChange={e => handleBlockChange(index, "content", e.target.value)}
+                                <SortableItem
+                                    key={block.id}
+                                    id={block.id}
+                                    dragHandle={listeners => (
+                                        <div className="cursor-grab text-gray-400 mr-2" {...listeners}>
+                                            <GripVertical className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                >
+                                    {dragHandle => (
+                                        <TextImportBlock
+                                            block={block}
+                                            index={index}
+                                            dragHandle={dragHandle}
+                                            onChange={handleBlockChange}
+                                            onRemove={handleRemoveBlock}
+                                            onParse={handleParseTextBlock}
                                         />
-                                        <Button variant="outline" onClick={() => handleParseTextBlock(index)}>Розпарсити</Button>
-                                    </CardContent>
-                                </Card>
+                                    )}
+                                </SortableItem>
+
                             );
                         }
 
-                        if (block.type !== "manual") return null;
-
-                        return (
-                            <Card key={block.id} className="border border-dashed">
-                                <CardHeader className="flex flex-row justify-between items-center">
-                                    <CardTitle className="text-lg">Питання #{index + 1}</CardTitle>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm">Розгорнута відповідь</span>
-                                        <Switch checked={block.isOpen} onCheckedChange={v => handleBlockChange(index, "isOpen", v)} />
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveBlock(block.id)}>
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                    <Input
-                                        placeholder="Питання"
-                                        value={block.question}
-                                        onChange={e => handleBlockChange(index, "question", e.target.value)}
-                                    />
-                                    {block.isOpen ? (
-                                        <Textarea
-                                            placeholder="Очікувана відповідь"
-                                            value={block.options[0] || ""}
-                                            onChange={e => handleOptionChange(index, 0, e.target.value)}
-                                        />
-                                    ) : (
-                                        <>
-                                            {block.options.map((opt, i) => (
-                                                <div key={i} className="flex items-center gap-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={block.correct.includes(i)}
-                                                        onChange={() => toggleCorrect(index, i)}
-                                                    />
-                                                    <Input
-                                                        className="flex-1"
-                                                        placeholder={`Варіант ${i + 1}`}
-                                                        value={opt}
-                                                        onChange={e => handleOptionChange(index, i, e.target.value)}
-                                                    />
-                                                    <Button variant="ghost" size="icon" onClick={() => removeOption(index, i)}>
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                            <Button variant="outline" onClick={() => addOption(index)}>+ Додати варіант</Button>
-                                        </>
+                        if (block.type === "manual") {
+                            return (
+                                <SortableItem
+                                    key={block.id}
+                                    id={block.id}
+                                    dragHandle={listeners => (
+                                        <div className="cursor-grab text-gray-400 mr-2" {...listeners}>
+                                            <GripVertical className="w-4 h-4" />
+                                        </div>
                                     )}
-                                </CardContent>
-                            </Card>
-                        );
+                                >
+                                    {dragHandle => (
+                                        <QuestionBlock
+                                            block={block}
+                                            index={index}
+                                            dragHandle={dragHandle}
+                                            onChange={handleBlockChange}
+                                            onOptionChange={handleOptionChange}
+                                            onAddOption={addOption}
+                                            onRemoveOption={removeOption}
+                                            onToggleCorrect={toggleCorrect}
+                                            onRemove={handleRemoveBlock}
+                                        />
+                                    )}
+                                </SortableItem>
+                            );
+                        }
+
+                        if (block.type === "fileImport") {
+                            return (
+                                <SortableItem
+                                    key={block.id}
+                                    id={block.id}
+                                    dragHandle={listeners => (
+                                        <div className="cursor-grab text-gray-400 mr-2" {...listeners}>
+                                            <GripVertical className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                >
+                                    {dragHandle => (
+                                        <FileImportBlock
+                                            block={block}
+                                            index={index}
+                                            dragHandle={dragHandle}
+                                            onRemove={handleRemoveBlock}
+                                            onChange={handleBlockChange}
+                                        />
+                                    )}
+                                </SortableItem>
+                            );
+                        }
+
+                        return null;
                     })}
                 </SortableContext>
             </DndContext>
@@ -247,9 +249,12 @@ export default function TestBuilder() {
                 />
             )}
 
-            <Button onClick={handleSubmit} className="w-full" variant="outline">Зберегти тест</Button>
+            <Button onClick={handleSubmit} className="w-full" variant="outline">
+                Save test
+            </Button>
         </div>
     );
+
 }
 
 

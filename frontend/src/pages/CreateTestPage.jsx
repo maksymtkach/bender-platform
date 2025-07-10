@@ -1,6 +1,6 @@
 import React from 'react';
 import {CarouselPlugin} from "@/components/CarouselPlugin.jsx";
-import TestBuilder from "@/components/form/TestBuilder.jsx";
+import TestBuilder from "@/components/test-builder/TestBuilder.jsx";
 
 function CreateTestPage() {
     return (

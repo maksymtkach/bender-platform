@@ -15,7 +15,7 @@ import CreateTestPage from "@/pages/CreateTestPage.jsx";
 function App() {
   return (
       <UserProvider>
-          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
               <BrowserRouter>
                   <Routes>
                       <Route element={<Layout />}>
