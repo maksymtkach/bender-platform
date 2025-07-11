@@ -29,7 +29,7 @@ public class TestController {
             @RequestBody TestDTO dto,
             @RequestHeader("Authorization") String authorizationHeader) {
 
-        System.out.println(dto); // <- це покаже, що реально приходить
+        System.out.println(dto);
 
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtService.extractEmail(token);
@@ -50,5 +50,15 @@ public class TestController {
                 .map(testMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TestDTO> getTestById(@PathVariable Long id) {
+        Test test = testService.getTestById(id);
+        if (test == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(testMapper.toDto(test));
+    }
+
 }
 

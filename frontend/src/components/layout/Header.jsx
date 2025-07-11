@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {useContext} from "react";
 import {UserContext} from "@/contexts/UserContext.js";
 
+// TODO: ensure only authorised user can view some tabs
 export default function Header() {
     const { user } = useContext(UserContext);
     return (
@@ -13,7 +14,10 @@ export default function Header() {
                 <Link to="/">Home</Link>
                 <Link to="/info">Info</Link>
                 {user &&
-                    <Link to="/create-test">Create test</Link>
+                    <>
+                        <Link to="/create-test">Create test</Link>
+                        <Link to="/tests">Tests</Link>
+                    </>
                 }
                 <Link to="/login">
                     {/*TODO: enable visibility after login*/}

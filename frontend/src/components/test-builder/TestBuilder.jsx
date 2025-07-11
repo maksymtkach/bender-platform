@@ -36,6 +36,8 @@ const defaultBlock = () => ({
     isOpen: false,
 });
 
+// TODO: add pts for questions
+// TODO: user can select questions that are allowed to be explained
 export default function TestBuilder() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -128,6 +130,8 @@ export default function TestBuilder() {
         };
 
         console.log(payload);
+
+        // TODO: might be better to optimise token attaching logic over project
         const token = localStorage.getItem("token");
         await fetch("http://localhost:8080/api/v1/tests", {
             method: "POST",
