@@ -117,13 +117,27 @@ export default function TestBuilder() {
             title,
             description,
             isPublic,
-            questions: blocks.filter(b => b.type === "manual"),
+            questions: blocks
+                .filter(b => b.type === "manual")
+                .map(({ question, options, correct, isOpen }) => ({
+                    question,
+                    options,
+                    correct,
+                    isOpen,
+                }))
         };
+
+        console.log(payload);
+        const token = localStorage.getItem("token");
         await fetch("http://localhost:8080/api/v1/tests", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` // ← важливо!
+            },
             body: JSON.stringify(payload),
         });
+
         alert("Test saved!");
     };
 
