@@ -55,7 +55,6 @@ export function RegisterForm({
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                {/*TODO: when using suggested email input is white in dark mode*/}
                                 <Input
                                     id="email"
                                     type="email"
@@ -77,7 +76,6 @@ export function RegisterForm({
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
                                 </div>
-                                {/*TODO: add visibility toggle + add password confirmation*/}
                                 <Input id="password" type="password" required onChange={e => setPassword(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full">

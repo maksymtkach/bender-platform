@@ -1,9 +1,7 @@
-// FileImportBlock.jsx
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
-// TODO: improve UX of this component
 export default function FileImportBlock({ block, index, dragHandle, onRemove }) {
     return (
         <Card className="border border-dashed">

@@ -24,8 +24,6 @@ public class JwtService {
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        System.out.println("🔐 JWT SECRET: " + secret);
-        System.out.println("🔐 KEY BASE64: " + Base64.getEncoder().encodeToString(key.getEncoded()));
     }
 
     public String generateToken(String username) {

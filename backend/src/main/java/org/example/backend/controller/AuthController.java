@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import com.nimbusds.oauth2.sdk.id.ClientID;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.backend.model.LoginRequest;
@@ -11,6 +12,7 @@ import org.example.backend.model.mapper.UserMapper;
 import org.example.backend.service.JwtService;
 import org.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +35,13 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
-    //TODO: CRUD for users
     private final JwtService jwtService;
     private final UserService userService;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        System.out.println(request);
-
         if (request.getEmail() == null || request.getPassword() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -66,8 +67,6 @@ public class AuthController {
 
     @PostMapping("/google")
     public ResponseEntity<?> googleAuth(@RequestBody Map<String, String> body) throws GeneralSecurityException, IOException {
-        System.out.println(body);
-
         String idTokenString = body.get("token");
         if (idTokenString == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Token is missing"));
@@ -76,7 +75,7 @@ public class AuthController {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList("611560011764-hng699eerd5t76jl8j6o8afvsinhd2mm.apps.googleusercontent.com"))
+                .setAudience(Collections.singletonList(clientId))
                 .build();
 
         GoogleIdToken idToken;
@@ -93,7 +92,6 @@ public class AuthController {
 
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail();
-        System.out.println("Google email: " + email);
 
         User user = userService.findByEmail(email);
 
@@ -104,7 +102,6 @@ public class AuthController {
             user.setUsername(name != null ? name : email);
             user.setRole(UserRole.USER);
             user = userService.saveUser(user);
-            System.out.println("Registered new user: " + user);
         }
 
         String jwt = jwtService.generateToken(user.getEmail());

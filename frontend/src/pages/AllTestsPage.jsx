@@ -3,8 +3,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-// TODO: improve UI of this page: <Created at> + general UX
-// TODO: maybe add filtering & sorting by keywords and date
 export default function AllTestsPage() {
     const [tests, setTests] = useState([]);
     const navigate = useNavigate();
@@ -12,7 +10,6 @@ export default function AllTestsPage() {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        // TODO: might be better to optimise token attaching logic over project
         const fetchTests = async () => {
             const res = await fetch("http://localhost:8080/api/v1/tests/all", {
                 method: "GET",

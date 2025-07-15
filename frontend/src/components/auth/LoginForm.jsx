@@ -107,7 +107,6 @@ export function LoginForm({
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                {/*TODO: when using suggested email input is white in dark mode*/}
                                 <Input
                                     id="email"
                                     type="email"
@@ -126,7 +125,6 @@ export function LoginForm({
                                         Forgot your password?
                                     </a>
                                 </div>
-                                {/*TODO: add visibility toggle*/}
                                 <Input id="password" type="password" required onChange={e => setPassword(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full">

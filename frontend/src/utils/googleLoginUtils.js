@@ -8,10 +8,9 @@ const googleLogin = useGoogleLogin({
             body: JSON.stringify({ token: tokenResponse.credential })
         });
         const data = await res.json();
-        // data.token — ваш JWT
         localStorage.setItem('jwt', data.token);
     },
-    flow: 'implicit', // щоб отримати id_token у credential
+    flow: 'implicit',
 });
 
 export default googleLogin;

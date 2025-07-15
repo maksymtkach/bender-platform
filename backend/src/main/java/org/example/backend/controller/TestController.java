@@ -35,9 +35,6 @@ public class TestController {
     public ResponseEntity<Void> createTest(
             @RequestBody TestDTO dto,
             @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
-
-        System.out.println(dto);
-
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtService.extractEmail(token);
 
@@ -70,7 +67,6 @@ public class TestController {
     @GetMapping("/embedding")
     public ResponseEntity<?> getTestEmbedding(@RequestParam String text) {
         List<Double> embedding = SemanticApiClient.getEmbedding(text);
-        System.out.println("Embedding: " + embedding);
         return ResponseEntity.ok(embedding);
     }
 

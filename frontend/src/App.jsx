@@ -13,7 +13,6 @@ import CreateTestPage from "@/pages/CreateTestPage.jsx";
 import AllTestsPage from "@/pages/AllTestsPage.jsx";
 import TakeTestPage from "@/pages/TakeTestPage.jsx";
 
-//TODO: Create secure routes for Login and SignUp
 function App() {
   return (
       <UserProvider>

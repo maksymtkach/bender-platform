@@ -16,8 +16,6 @@ import { Input } from "@/components/ui/input.jsx";
 import { Textarea } from "@/components/ui/textarea.js";
 import { Button } from "@/components/ui/button.js";
 import { nanoid } from "nanoid";
-import { Trash2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch.js";
 import {parseQuestionsFromText} from "@/utils/parsers/parseQuestionsFromText.js";
 import BlockActions from "@/components/test-builder/BlockActions.jsx";
 import QuestionBlock from "@/components/test-builder/QuestionBlock.jsx";
@@ -40,8 +38,6 @@ const defaultBlock = () => ({
     aiExplain: false,
 });
 
-// TODO: add pts for questions
-// TODO: user can select questions that are allowed to be explained
 export default function TestBuilder() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -60,10 +56,9 @@ export default function TestBuilder() {
         const index = blocks.findIndex(b => b.id === id);
         if (index === -1) return;
         const blockToCopy = blocks[index];
-        // Глибока копія даних (тільки не копіюємо id, щоб уникнути конфлікту)
         const newBlock = {
             ...JSON.parse(JSON.stringify(blockToCopy)),
-            id: nanoid(), // Новий id
+            id: nanoid(),
         };
         setBlocks([
             ...blocks.slice(0, index + 1),
@@ -153,7 +148,6 @@ export default function TestBuilder() {
                 }))
         };
 
-        // TODO: might be better to optimise token attaching logic over project
         const token = localStorage.getItem("token");
         await fetch("http://localhost:8080/api/v1/tests", {
             method: "POST",
@@ -284,7 +278,6 @@ export default function TestBuilder() {
                 </SortableContext>
             </DndContext>
 
-            {/* TODO: add button to duplicate current block */}
             {blocks.length > 0 && (
                 <BlockActions
                     onAddBlock={handleAddBlock}
