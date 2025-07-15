@@ -26,6 +26,8 @@ import SortableItem from "@/components/test-builder/SortableItem.jsx";
 import { GripVertical } from "lucide-react";
 import FileImportBlock from "@/components/test-builder/FileImportBlock.jsx";
 import { Checkbox } from "@/components/ui/checkbox"
+import {toast} from "sonner";
+import {useNavigate} from "react-router-dom";
 
 const defaultBlock = () => ({
     id: nanoid(),
@@ -45,6 +47,7 @@ export default function TestBuilder() {
     const [description, setDescription] = useState("");
     const [isPublic, setIsPublic] = useState(false);
     const [blocks, setBlocks] = useState([]);
+    const navigate = useNavigate();
 
     const sensors = useSensors(useSensor(PointerSensor));
 
@@ -150,8 +153,6 @@ export default function TestBuilder() {
                 }))
         };
 
-        console.log(payload);
-
         // TODO: might be better to optimise token attaching logic over project
         const token = localStorage.getItem("token");
         await fetch("http://localhost:8080/api/v1/tests", {
@@ -163,7 +164,9 @@ export default function TestBuilder() {
             body: JSON.stringify(payload),
         });
 
-        alert("Test saved!");
+        toast("Test is saved");
+
+        navigate("/tests");
     };
 
     return (

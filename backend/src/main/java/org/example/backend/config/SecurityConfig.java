@@ -13,13 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-/**
- * Конфігурація безпеки для всього застосунку.
- * - Turn Off CSRF (redundant due to JWT usage)
- * - Set CORS (for access from client)
- * - Listed all endpoints that can be reached without auth
- * - JwtFiler
- */
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -41,7 +34,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login**", "/error", "/api/v1/auth/**").permitAll()
+                        .requestMatchers( "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/", "/login**", "/error", "/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

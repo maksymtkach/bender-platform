@@ -12,11 +12,10 @@ export default function Header() {
             <img className="h-8 w-8" src={logo} alt="Book" />
             <div className="flex gap-4 justify-end items-center">
                 <Link to="/">Home</Link>
-                <Link to="/info">Info</Link>
                 {user &&
                     <>
                         <Link to="/create-test">Create test</Link>
-                        <Link to="/tests">Tests</Link>
+                        <Link to="/tests">My tests</Link>
                     </>
                 }
                 <Link to="/login">

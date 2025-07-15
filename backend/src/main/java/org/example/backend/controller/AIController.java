@@ -6,6 +6,7 @@ import org.example.backend.model.dto.AIExplanationResponseDTO;
 import org.example.backend.service.OpenAIService;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: add Swagger doc notes
 @RestController
 @RequestMapping("/api/v1/ai")
 @RequiredArgsConstructor

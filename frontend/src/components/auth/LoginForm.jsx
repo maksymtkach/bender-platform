@@ -36,7 +36,7 @@ export function LoginForm({
                 }
             }).then(res => {
                 setUser(res.data);
-                navigate("/info"); // одразу редірект якщо токен валідний
+                navigate("/");
             }).catch(err => {
                 console.error("Invalid token", err);
                 localStorage.removeItem("token");

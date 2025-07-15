@@ -28,7 +28,7 @@ import java.util.Map;
 
 //TODO: add annotations to clarify the purpose of the class
 //TODO: maybe restructure on several files + superclass
-//TODO: add OAuth (Google auth)
+//TODO: add Swagger doc notes
 @RestController
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor

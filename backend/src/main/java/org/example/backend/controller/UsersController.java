@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//TODO: add Swagger doc notes
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/users")
