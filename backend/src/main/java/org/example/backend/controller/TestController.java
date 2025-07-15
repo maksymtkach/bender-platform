@@ -1,12 +1,16 @@
 package org.example.backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.model.Test;
 import org.example.backend.model.User;
+import org.example.backend.model.dto.TestAttemptResultDTO;
+import org.example.backend.model.dto.TestAttemptSubmitDTO;
 import org.example.backend.model.dto.TestDTO;
 import org.example.backend.service.JwtService;
 import org.example.backend.service.TestService;
 import org.example.backend.service.UserService;
+import org.example.backend.utils.SemanticApiClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.example.backend.model.mapper.TestMapper;
@@ -23,11 +27,13 @@ public class TestController {
     private final JwtService jwtService;
     private final UserService userService;
     private final TestMapper testMapper;
+    private final SemanticApiClient semanticApiClient;
+
 
     @PostMapping
     public ResponseEntity<Void> createTest(
             @RequestBody TestDTO dto,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
 
         System.out.println(dto);
 
@@ -43,8 +49,8 @@ public class TestController {
     }
 
 
-    @GetMapping
-    public List<TestDTO> getAll() {
+    @GetMapping("/all")
+    public List<TestDTO> getAll(@RequestHeader("Authorization") String authHeader) {
         return testService.getAllTests()
                 .stream()
                 .map(testMapper::toDto)
@@ -60,5 +66,24 @@ public class TestController {
         return ResponseEntity.ok(testMapper.toDto(test));
     }
 
+    @GetMapping("/embedding")
+    public ResponseEntity<?> getTestEmbedding(@RequestParam String text) {
+        List<Double> embedding = SemanticApiClient.getEmbedding(text);
+        System.out.println("Embedding: " + embedding);
+        return ResponseEntity.ok(embedding);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<TestAttemptResultDTO> submit(
+            @RequestBody TestAttemptSubmitDTO dto,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        String email = jwtService.extractEmail(token);
+        User user = userService.findByEmail(email);
+
+        TestAttemptResultDTO result = testService.checkAndSaveAttempt(user, dto);
+        return ResponseEntity.ok(result);
+    }
 }
 

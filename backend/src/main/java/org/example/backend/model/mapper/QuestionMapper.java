@@ -11,18 +11,22 @@ public class QuestionMapper {
         return QuestionDTO.builder()
                 .id(question.getId())
                 .question(question.getQuestion())
-                .isOpen(question.isOpen())
+                .isOpen(question.getIsOpen())
                 .options(question.getOptions())
-                .correctAnswers(question.getCorrectAnswers())
+                .correct(question.getCorrect())
+                .weight(question.getWeight())
+                .aiExplain(question.getAiExplain())
                 .build();
     }
 
     public Question toEntity(QuestionDTO dto) {
         return Question.builder()
                 .question(dto.getQuestion())
-                .isOpen(dto.isOpen())
+                .isOpen(dto.getIsOpen())
                 .options(dto.getOptions())
-                .correctAnswers(dto.getCorrectAnswers())
+                .correct(dto.getCorrect())
+                .weight(dto.getWeight() != null ? dto.getWeight() : 1.0)
+                .aiExplain(dto.getAiExplain())
                 .build();
     }
 }

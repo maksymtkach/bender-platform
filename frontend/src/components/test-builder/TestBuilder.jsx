@@ -34,6 +34,8 @@ const defaultBlock = () => ({
     options: ["", "", ""],
     correct: [],
     isOpen: false,
+    weight: 1,
+    aiExplain: false,
 });
 
 // TODO: add pts for questions
@@ -50,6 +52,23 @@ export default function TestBuilder() {
         const newBlock = defaultBlock();
         setBlocks(prev => [...prev, newBlock]);
     };
+
+    const handleDuplicateBlock = (id) => {
+        const index = blocks.findIndex(b => b.id === id);
+        if (index === -1) return;
+        const blockToCopy = blocks[index];
+        // Глибока копія даних (тільки не копіюємо id, щоб уникнути конфлікту)
+        const newBlock = {
+            ...JSON.parse(JSON.stringify(blockToCopy)),
+            id: nanoid(), // Новий id
+        };
+        setBlocks([
+            ...blocks.slice(0, index + 1),
+            newBlock,
+            ...blocks.slice(index + 1)
+        ]);
+    };
+
 
     const handleAddTextImportBlock = () => {
         setBlocks(prev => [...prev, { id: nanoid(), type: "textImport", content: "" }]);
@@ -121,11 +140,13 @@ export default function TestBuilder() {
             isPublic,
             questions: blocks
                 .filter(b => b.type === "manual")
-                .map(({ question, options, correct, isOpen }) => ({
+                .map(({ question, options, correct, isOpen, weight, aiExplain}) => ({
                     question,
                     options,
                     correct,
                     isOpen,
+                    weight,
+                    aiExplain
                 }))
         };
 
@@ -224,6 +245,7 @@ export default function TestBuilder() {
                                             onRemoveOption={removeOption}
                                             onToggleCorrect={toggleCorrect}
                                             onRemove={handleRemoveBlock}
+                                            onDuplicate={handleDuplicateBlock}
                                         />
                                     )}
                                 </SortableItem>
@@ -259,6 +281,7 @@ export default function TestBuilder() {
                 </SortableContext>
             </DndContext>
 
+            {/* TODO: add button to duplicate current block */}
             {blocks.length > 0 && (
                 <BlockActions
                     onAddBlock={handleAddBlock}
@@ -267,7 +290,7 @@ export default function TestBuilder() {
                 />
             )}
 
-            <Button onClick={handleSubmit} className="w-full" variant="outline">
+            <Button onClick={handleSubmit} className="w-full" variant="default">
                 Save test
             </Button>
         </div>

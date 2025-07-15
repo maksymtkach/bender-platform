@@ -23,17 +23,22 @@ public class Question {
 
     private String question;
 
-    private boolean isOpen;
+    private Boolean isOpen;
 
     @ElementCollection
     private List<String> options;
 
     @ElementCollection
-    private List<Integer> correctAnswers;
+    private List<Integer> correct;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_id")
     private Test test;
+
+    @Builder.Default
+    private Double weight = 1.0;
+
+    private Boolean aiExplain;
 }
 
 

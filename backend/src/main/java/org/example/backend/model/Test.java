@@ -26,4 +26,22 @@ public class Test {
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Builder.Default
+    private Date createdAt = new Date();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
+
+    @Column(name = "embedding", columnDefinition = "text") // або "jsonb" якщо Postgres
+    private String embeddingJson;
+
+    @ElementCollection
+    @CollectionTable(name = "test_keywords", joinColumns = @JoinColumn(name = "test_id"))
+    @Column(name = "keyword")
+    private List<String> keywords = new ArrayList<>();
 }

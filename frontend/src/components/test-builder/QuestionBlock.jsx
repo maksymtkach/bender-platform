@@ -1,14 +1,20 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components/ui/card";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {Checkbox} from "@/components/ui/checkbox.js";
+import { Copy as CopyIcon } from "lucide-react";
+import { useState } from "react";
+
 
 export default function QuestionBlock({
-                                          index, dragHandle, block, onChange, onOptionChange, onAddOption, onRemoveOption, onToggleCorrect, onRemove
+                                          index, dragHandle, block, onChange, onOptionChange, onAddOption, onRemoveOption, onToggleCorrect, onRemove, onDuplicate
                                       }) {
+    const [deleteOpen, setDeleteOpen] = useState(false);
+
     return (
         <Card className="border border-dashed">
             <CardHeader className="flex flex-row justify-between items-center">
@@ -16,14 +22,27 @@ export default function QuestionBlock({
                     {dragHandle?.()}
                     <CardTitle>Question №{index + 1}</CardTitle>
                 </div>
-                <div className="flex items-center gap-2">
-                    {/* TODO: pop up with warning that prev question data will be lost  */}
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm">AI explanation</span>
+                        <Switch
+                            checked={block.aiExplain}
+                            onCheckedChange={v => onChange(index, "aiExplain", v)}
+                        />
+                    </div>
                     <span className="text-sm">Text answer</span>
                     <Switch checked={block.isOpen} onCheckedChange={v => onChange(index, "isOpen", v)} />
-                    {/* TODO: pop up with warning that question data will be deleted  */}
-                    <Button variant="ghost" size="icon" onClick={() => onRemove(block.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)}>
                         <Trash2 className="w-4 h-4" />
                     </Button>
+                    <ConfirmDialog
+                        open={deleteOpen}
+                        onOpenChange={setDeleteOpen}
+                        title="Delete this question?"
+                        onConfirm={() => onRemove(block.id)}
+                    >
+                        This cannot be undone!
+                    </ConfirmDialog>
                 </div>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -57,7 +76,30 @@ export default function QuestionBlock({
                                 </Button>
                             </div>
                         ))}
-                        <Button variant="outline" onClick={() => onAddOption(index)}>Add option</Button>
+                        <CardFooter className="flex flex-row justify-between items-center p-0">
+                            <Button variant="outline" onClick={() => onAddOption(index)}>Add option</Button>
+                            <div className="flex items-center gap-2 mt-2 justify-end">
+                                <label htmlFor={`score-${block.id}`} className="text-sm">Score</label>
+                                <Input
+                                    id={`score-${block.id}`}
+                                    type="number"
+                                    min={0.1}
+                                    step={0.1}
+                                    value={block.weight ?? ""}
+                                    onChange={e => onChange(index, "weight", e.target.value === "" ? "" : Number(e.target.value))}
+                                    className="w-20 text-right"
+                                    placeholder="1"
+                                />
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onDuplicate(block.id)}
+                                    title="Duplicate question"
+                                >
+                                    <CopyIcon className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </CardFooter>
                     </>
                 )}
             </CardContent>

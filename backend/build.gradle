@@ -26,6 +26,7 @@ repositories {
 // errors occur when runtimeOnly and implementation for postgres
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.apache.opennlp:opennlp-tools:2.4.0'
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation 'org.postgresql:postgresql:42.7.3'
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'

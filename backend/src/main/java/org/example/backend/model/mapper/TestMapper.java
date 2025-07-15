@@ -27,6 +27,7 @@ public class TestMapper {
                 .questions(test.getQuestions().stream()
                         .map(questionMapper::toDto)
                         .toList())
+                .keywords(test.getKeywords())
                 .build();
     }
 
@@ -34,7 +35,7 @@ public class TestMapper {
         Test test = new Test();
         test.setTitle(dto.getTitle());
         test.setDescription(dto.getDescription());
-        test.setPublic(dto.isPublic());
+        test.setPublic(Boolean.TRUE.equals(dto.getIsPublic()));
         test.setAuthor(author);
         test.setQuestions(new ArrayList<>());
 

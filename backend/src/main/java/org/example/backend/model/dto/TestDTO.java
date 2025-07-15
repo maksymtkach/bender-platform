@@ -15,8 +15,9 @@ public class TestDTO {
     private long id;
     private String title;
     private String description;
-    private boolean isPublic;
+    private Boolean isPublic;
     private Long authorId;
     private List<QuestionDTO> questions;
+    private List<String> keywords;
 }
 
