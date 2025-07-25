@@ -66,7 +66,7 @@ public class TestController {
 
     @GetMapping("/embedding")
     public ResponseEntity<?> getTestEmbedding(@RequestParam String text) {
-        List<Double> embedding = SemanticApiClient.getEmbedding(text);
+        List<Double> embedding = semanticApiClient.getEmbedding(text);
         return ResponseEntity.ok(embedding);
     }
 

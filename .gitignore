@@ -1,11 +1,9 @@
-# Java & IntelliJ
 .idea/
 *.iml
 out/
 target/
 *.class
 
-# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -13,11 +11,8 @@ __pycache__/
 .env
 .venv
 
-# Node.js (if any frontend)
 node_modules/
 
-# Logs
 *.log
 
-# Mac
 .DS_Store

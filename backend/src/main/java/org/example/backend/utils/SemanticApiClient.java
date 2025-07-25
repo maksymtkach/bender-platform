@@ -1,5 +1,7 @@
 package org.example.backend.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -10,7 +12,7 @@ import java.util.*;
 public class SemanticApiClient {
     private static final String EMBED_URL = "http://localhost:5010/embed";
 
-    public static List<Double> getEmbedding(String text) {
+    public List<Double> getEmbedding(String text) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

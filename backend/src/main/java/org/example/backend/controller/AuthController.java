@@ -9,6 +9,7 @@ import org.example.backend.model.User;
 import org.example.backend.model.UserRole;
 import org.example.backend.model.dto.UserDTO;
 import org.example.backend.model.mapper.UserMapper;
+import org.example.backend.service.GoogleAuthService;
 import org.example.backend.service.JwtService;
 import org.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,7 @@ import java.util.Map;
 public class AuthController {
     private final JwtService jwtService;
     private final UserService userService;
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String clientId;
+    private final GoogleAuthService googleAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -72,15 +72,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "Token is missing"));
         }
 
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(clientId))
-                .build();
-
         GoogleIdToken idToken;
         try {
-            idToken = verifier.verify(idTokenString);
+            idToken = googleAuthService.verifyToken(idTokenString);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid ID token"));
@@ -90,7 +84,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid ID token"));
         }
 
-        GoogleIdToken.Payload payload = idToken.getPayload();
+        var payload = idToken.getPayload();
         String email = payload.getEmail();
 
         User user = userService.findByEmail(email);

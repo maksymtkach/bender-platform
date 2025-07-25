@@ -24,6 +24,7 @@ public class Test {
     @JoinColumn(name = "user_id")
     private User author;
 
+    @Builder.Default
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
@@ -41,6 +42,7 @@ public class Test {
     private String embeddingJson;
 
     @ElementCollection
+    @Builder.Default
     @CollectionTable(name = "test_keywords", joinColumns = @JoinColumn(name = "test_id"))
     @Column(name = "keyword")
     private List<String> keywords = new ArrayList<>();
